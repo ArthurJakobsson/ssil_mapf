@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>GNN &#8212; SSIL GNN MAPF with Simulation and DAgger Pipeline 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=2bf1fcf8" />
+    
+    <script src="_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Simulator" href="simulator.html" />
+    <link rel="prev" title="Benchmarking" href="benchmarking.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="simulator.html" title="Simulator"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="benchmarking.html" title="Benchmarking"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">SSIL GNN MAPF with Simulation and DAgger Pipeline 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">GNN</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="gnn">
+<h1>GNN<a class="headerlink" href="#gnn" title="Link to this heading">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Some of the below documentation has been created with the assistance of generative AI and so should be taken with a grain of salt.</p>
+</div>
+<section id="dataloader-py">
+<h2>dataloader.py<a class="headerlink" href="#dataloader-py" title="Link to this heading">¶</a></h2>
+<p>This file converts map, backward Dijkstra, and path data into graph-structured data for
+training Graph Neural Networks (GNNs). It handles the creation of node features, edge connections,
+and labels for multi-agent path finding tasks.</p>
+<p>Key operations:</p>
+<ul class="simple">
+<li><p>Convert raw MAPF data into PyTorch Geometric Data objects</p></li>
+<li><p>Generate local observation windows for each agent</p></li>
+<li><p>Create graph structures with appropriate node and edge features</p></li>
+<li><p>Process and normalize features for neural network training</p></li>
+<li><p>Saves graphs to folder for use</p></li>
+</ul>
+<section id="utility-functions">
+<h3>Utility Functions<a class="headerlink" href="#utility-functions" title="Link to this heading">¶</a></h3>
+</section>
+<section id="apply-masks">
+<h3>apply_masks<a class="headerlink" href="#apply-masks" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="apply_masks">
+<span class="sig-name descname"><span class="pre">apply_masks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_len</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curdata</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#apply_masks" title="Link to this definition">¶</a></dt>
+<dd><p>Applies train/test masks to split data for training and evaluation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_len</strong> (<em>int</em>) – Length of the data</p></li>
+<li><p><strong>curdata</strong> (<em>Data</em>) – PyTorch Geometric Data object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Data object with train_mask and test_mask attributes</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Data</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="normalize-graph-data">
+<h3>normalize_graph_data<a class="headerlink" href="#normalize-graph-data" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="normalize_graph_data">
+<span class="sig-name descname"><span class="pre">normalize_graph_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bd_normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'center'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#normalize_graph_data" title="Link to this definition">¶</a></dt>
+<dd><p>Normalizes edge attributes and backward Dijkstra values in the graph data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>Data</em>) – PyTorch Geometric Data object</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – Window size for local observation</p></li>
+<li><p><strong>edge_normalize</strong> (<em>str</em>) – Method for normalizing edge attributes</p></li>
+<li><p><strong>bd_normalize</strong> (<em>str</em>) – Method for normalizing backward Dijkstra values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Normalized Data object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Data</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="get-bd-prefs">
+<h3>get_bd_prefs<a class="headerlink" href="#get-bd-prefs" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="get_bd_prefs">
+<span class="sig-name descname"><span class="pre">get_bd_prefs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">range_num_agents</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#get_bd_prefs" title="Link to this definition">¶</a></dt>
+<dd><p>Gets movement preferences based on backward Dijkstra values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos_list</strong> (<em>numpy.ndarray</em>) – Agent positions of shape (N,2)</p></li>
+<li><p><strong>bds</strong> (<em>numpy.ndarray</em>) – Backward Dijkstra values of shape (N,W,H)</p></li>
+<li><p><strong>range_num_agents</strong> (<em>numpy.ndarray</em>) – Range of agent indices</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Agent movement preferences</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="create-data-object">
+<h3>create_data_object<a class="headerlink" href="#create-data-object" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="create_data_object">
+<span class="sig-name descname"><span class="pre">create_data_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bd_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">goal_locs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_layers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bd_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">np.array([])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug_checks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#create_data_object" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a PyTorch Geometric Data object from raw MAPF data. The usable extra information is agent_locations, agent_goal, near_goal_info, and at_goal_grid as well as bds which are almost always used.
+Agent locations provides the locations of the agents nearby, agent goal provides the goal locations of the agents nearby, near_goal_info provides the agents near the goal, and at_goal_grid provides a binary grid of the agents if they are at their goal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos_list</strong> (<em>numpy.ndarray</em>) – Agent positions of shape (N,2)</p></li>
+<li><p><strong>bd_list</strong> (<em>numpy.ndarray</em>) – Backward Dijkstra values of shape (N,W,H)</p></li>
+<li><p><strong>grid</strong> (<em>numpy.ndarray</em>) – Grid map of shape (W,H)</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – Window size for local observation</p></li>
+<li><p><strong>m</strong> (<em>int</em>) – Number of closest neighbors to consider</p></li>
+<li><p><strong>goal_locs</strong> (<em>numpy.ndarray</em>) – Goal locations of shape (N,2)</p></li>
+<li><p><strong>extra_layers</strong> (<em>list</em>) – List of additional features to include</p></li>
+<li><p><strong>bd_pred</strong> (<em>str</em>) – Whether to include backward Dijkstra predictions</p></li>
+<li><p><strong>labels</strong> (<em>numpy.ndarray</em>) – Ground truth labels</p></li>
+<li><p><strong>debug_checks</strong> (<em>bool</em>) – Whether to perform debug assertions</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>PyTorch Geometric Data object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Data</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="dataset-classes">
+<h3>Dataset Classes<a class="headerlink" href="#dataset-classes" title="Link to this heading">¶</a></h3>
+</section>
+<section id="myowndataset">
+<h3>MyOwnDataset<a class="headerlink" href="#myowndataset" title="Link to this heading">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="MyOwnDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MyOwnDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Dataset</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MyOwnDataset" title="Link to this definition">¶</a></dt>
+<dd><p>A PyTorch Geometric Dataset for processing and loading MAPF data as graphs.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="MyOwnDataset.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapNpzFile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bdNpzFolder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pathNpzFolder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">processedOutputFolder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_cores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_layers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bd_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_per_pt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MyOwnDataset.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mapNpzFile</strong> (<em>str</em>) – Path to NPZ file containing map data</p></li>
+<li><p><strong>bdNpzFolder</strong> (<em>str</em>) – Path to folder containing backward Dijkstra NPZ files</p></li>
+<li><p><strong>pathNpzFolder</strong> (<em>str</em>) – Path to folder containing path NPZ files</p></li>
+<li><p><strong>processedOutputFolder</strong> (<em>str</em>) – Path to output folder for processed data</p></li>
+<li><p><strong>num_cores</strong> (<em>int</em>) – Number of CPU cores to use for parallel processing</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – Window size for local observation</p></li>
+<li><p><strong>m</strong> (<em>int</em>) – Number of closest neighbors to consider</p></li>
+<li><p><strong>extra_layers</strong> (<em>list</em>) – List of additional features to include</p></li>
+<li><p><strong>bd_pred</strong> (<em>str</em>) – Whether to include backward Dijkstra predictions</p></li>
+<li><p><strong>num_per_pt</strong> (<em>int</em>) – Number of graphs per PT file</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="MyOwnDataset.processed_dir">
+<span class="sig-name descname"><span class="pre">processed_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#MyOwnDataset.processed_dir" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path to the processed directory</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="MyOwnDataset.load_status_data">
+<span class="sig-name descname"><span class="pre">load_status_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MyOwnDataset.load_status_data" title="Link to this definition">¶</a></dt>
+<dd><p>Loads a CSV file tracking the status of processed files.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="MyOwnDataset.raw_file_names">
+<span class="sig-name descname"><span class="pre">raw_file_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MyOwnDataset.raw_file_names" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of raw file paths</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="MyOwnDataset.has_process">
+<span class="sig-name descname"><span class="pre">has_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#MyOwnDataset.has_process" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Whether the dataset has a process method</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="MyOwnDataset.has_download">
+<span class="sig-name descname"><span class="pre">has_download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#MyOwnDataset.has_download" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Whether the dataset has a download method</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="MyOwnDataset.create_and_save_graph">
+<span class="sig-name descname"><span class="pre">create_and_save_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_instance</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MyOwnDataset.create_and_save_graph" title="Link to this definition">¶</a></dt>
+<dd><p>Creates and saves a graph from a time instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>idx</strong> (<em>int</em>) – Index of the graph</p></li>
+<li><p><strong>time_instance</strong> (<em>tuple</em>) – Tuple of (pos_list, labels, bd_list, grid, goal_locs)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>PyTorch Geometric Data object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="MyOwnDataset.custom_process">
+<span class="sig-name descname"><span class="pre">custom_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MyOwnDataset.custom_process" title="Link to this definition">¶</a></dt>
+<dd><p>Process all data files and tracks processing status.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="MyOwnDataset.len">
+<span class="sig-name descname"><span class="pre">len</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MyOwnDataset.len" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Number of graphs in the dataset</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="MyOwnDataset.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MyOwnDataset.get" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves a graph by index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idx</strong> (<em>int</em>) – Index of the graph to retrieve</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>PyTorch Geometric Data object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Data</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="command-line-interface">
+<h3>Command Line Interface<a class="headerlink" href="#command-line-interface" title="Link to this heading">¶</a></h3>
+<p>The dataloader can be executed as a command-line tool:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>gnn.dataloader
+<span class="w">  </span>--mapNpzFile<span class="o">=</span>data_collection/data/benchmark_data/constant_npzs/all_maps.npz
+<span class="w">  </span>--bdNpzFolder<span class="o">=</span>data_collection/data/benchmark_data/constant_npzs
+<span class="w">  </span>--pathNpzFolder<span class="o">=</span>data_collection/data/logs/EXP_Test3/iter0/eecbs_npzs
+<span class="w">  </span>--processedFolder<span class="o">=</span>data_collection/data/logs/EXP_Test3/iter0/processed
+<span class="w">  </span>--k<span class="o">=</span><span class="m">4</span>
+<span class="w">  </span>--m<span class="o">=</span><span class="m">5</span>
+<span class="w">  </span>--extra_layers<span class="o">=</span>agent_locations,agent_goal,at_goal_grid
+<span class="w">  </span>--bd_pred<span class="o">=</span><span class="m">1</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="trainer-py">
+<h2>trainer.py<a class="headerlink" href="#trainer-py" title="Link to this heading">¶</a></h2>
+<p>This file trains a GNN model on MAPF data using PyTorch Geometric. It uses a SageConv model to predict agent actions.</p>
+<p>There are some <em>hyperparameter</em> modifications that can be done to training. This includes k, m, bd_pred, and extra_layers. The k and m are the same as in the dataloader. The bd_pred is whether to include backward Dijkstra predictions. The extra_layers are the extra features to include in the model. Note that changing these may cause recreation of the pt files which is a time and space intensive process.</p>
+<p>Command Line Interface</p>
+<p>The trainer can be called from the command-line:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>gnn.trainer<span class="w"> </span>--exp_folder<span class="o">=</span>data_collection/data/logs/EXP_Test<span class="w"> </span>--experiment<span class="o">=</span>exp0<span class="w"> </span>--iternum<span class="o">=</span><span class="m">0</span><span class="w"> </span>--num_cores<span class="o">=</span><span class="m">4</span>
+<span class="w">    </span>--processedFolders<span class="o">=</span>data_collection/data/logs/EXP_Test3/iter0/processed
+<span class="w">    </span>--mapNpzFile<span class="o">=</span>data_collection/data/benchmark_data/constant_npzs/all_maps.npz
+<span class="w">    </span>--bdNpzFolder<span class="o">=</span>data_collection/data/benchmark_data/constant_npzs
+<span class="w">    </span>--pathNpzFolders<span class="o">=</span>data_collection/data/logs/EXP_Test/iter0/eecbs_npzs
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">GNN</a><ul>
+<li><a class="reference internal" href="#dataloader-py">dataloader.py</a><ul>
+<li><a class="reference internal" href="#utility-functions">Utility Functions</a></li>
+<li><a class="reference internal" href="#apply-masks">apply_masks</a></li>
+<li><a class="reference internal" href="#normalize-graph-data">normalize_graph_data</a></li>
+<li><a class="reference internal" href="#get-bd-prefs">get_bd_prefs</a></li>
+<li><a class="reference internal" href="#create-data-object">create_data_object</a></li>
+<li><a class="reference internal" href="#dataset-classes">Dataset Classes</a></li>
+<li><a class="reference internal" href="#myowndataset">MyOwnDataset</a></li>
+<li><a class="reference internal" href="#command-line-interface">Command Line Interface</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#trainer-py">trainer.py</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="benchmarking.html"
+                          title="previous chapter">Benchmarking</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="simulator.html"
+                          title="next chapter">Simulator</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/gnn.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="simulator.html" title="Simulator"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="benchmarking.html" title="Benchmarking"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">SSIL GNN MAPF with Simulation and DAgger Pipeline 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">GNN</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2025, Arthur Jakobsson.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

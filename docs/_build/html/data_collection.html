@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Data Collection &#8212; SSIL GNN MAPF with Simulation and DAgger Pipeline 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=2bf1fcf8" />
+    
+    <script src="_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Slurm Implementation" href="slurm_implementation.html" />
+    <link rel="prev" title="SSIL GNN MAPF with Simulation and DAgger Documentation" href="index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="slurm_implementation.html" title="Slurm Implementation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="SSIL GNN MAPF with Simulation and DAgger Documentation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">SSIL GNN MAPF with Simulation and DAgger Pipeline 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Data Collection</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="data-collection">
+<h1>Data Collection<a class="headerlink" href="#data-collection" title="Link to this heading">¶</a></h1>
+<section id="eecbs-batchrunner-py">
+<h2>eecbs_batchrunner.py<a class="headerlink" href="#eecbs-batchrunner-py" title="Link to this heading">¶</a></h2>
+<p>This module provides a generic batch runner for Multi-Agent Path Finding (MAPF) solvers,
+specifically EECBS and Python-based ML models.</p>
+<p>The batch runner handles:</p>
+<ol class="arabic simple">
+<li><p>Parallel execution of MAPF solver runs across multiple scenarios and maps</p></li>
+<li><p>Data collection and processing of results</p></li>
+<li><p>Conversion of results to NPZ format for machine learning applications</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Some of the below documentation has been created with the assistance of generative AI and so should be taken with a grain of salt.</p>
+</div>
+<section id="module-constants">
+<h3>Module Constants<a class="headerlink" href="#module-constants" title="Link to this heading">¶</a></h3>
+<dl class="py data">
+<dt class="sig sig-object py" id="mapsToMaxNumAgents">
+<span class="sig-name descname"><span class="pre">mapsToMaxNumAgents</span></span><a class="headerlink" href="#mapsToMaxNumAgents" title="Link to this definition">¶</a></dt>
+<dd><p>Dictionary mapping map names to maximum number of agents each map can handle</p>
+</dd></dl>
+
+</section>
+<section id="tmux-session-functions">
+<h3>Tmux Session Functions<a class="headerlink" href="#tmux-session-functions" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="createTmuxSession">
+<span class="sig-name descname"><span class="pre">createTmuxSession</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#createTmuxSession" title="Link to this definition">¶</a></dt>
+<dd><p>Create a new tmux session with a given index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>i</strong> (<em>int</em>) – Index for the tmux session</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="runCommandWithTmux">
+<span class="sig-name descname"><span class="pre">runCommandWithTmux</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#runCommandWithTmux" title="Link to this definition">¶</a></dt>
+<dd><p>Run a command in a tmux session with a given index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i</strong> (<em>int</em>) – Index of the tmux session</p></li>
+<li><p><strong>command</strong> (<em>str</em>) – Command to run in the tmux session</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="killTmuxSession">
+<span class="sig-name descname"><span class="pre">killTmuxSession</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#killTmuxSession" title="Link to this definition">¶</a></dt>
+<dd><p>Kill a tmux session with a given index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>i</strong> (<em>int</em>) – Index of the tmux session to kill</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="command-generation">
+<h3>Command Generation<a class="headerlink" href="#command-generation" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="getEECBSCommand">
+<span class="sig-name descname"><span class="pre">getEECBSCommand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eecbsArgs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputFolder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numAgents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#getEECBSCommand" title="Link to this definition">¶</a></dt>
+<dd><p>Generate the command for running EECBS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>eecbsArgs</strong> (<em>dict</em>) – Arguments for EECBS</p></li>
+<li><p><strong>outputFolder</strong> (<em>str</em>) – Folder for output files</p></li>
+<li><p><strong>outputfile</strong> (<em>str</em>) – File for EECBS output</p></li>
+<li><p><strong>mapfile</strong> (<em>str</em>) – Path to map file</p></li>
+<li><p><strong>numAgents</strong> (<em>int</em>) – Number of agents</p></li>
+<li><p><strong>scenfile</strong> (<em>str</em>) – Path to scenario file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Command for running EECBS</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="getPyModelCommand">
+<span class="sig-name descname"><span class="pre">getPyModelCommand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">runnerArgs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputFolder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numAgents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#getPyModelCommand" title="Link to this definition">¶</a></dt>
+<dd><p>Generate the command for running the Python ML model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>runnerArgs</strong> (<em>dict</em>) – Arguments for the Python model</p></li>
+<li><p><strong>outputFolder</strong> (<em>str</em>) – Folder for output files</p></li>
+<li><p><strong>outputfile</strong> (<em>str</em>) – File for model output</p></li>
+<li><p><strong>mapfile</strong> (<em>str</em>) – Path to map file</p></li>
+<li><p><strong>numAgents</strong> (<em>int</em>) – Number of agents</p></li>
+<li><p><strong>scenfile</strong> (<em>str</em>) – Path to scenario file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Command for running the Python model</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="getCommandForSingleInstance">
+<span class="sig-name descname"><span class="pre">getCommandForSingleInstance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">runnerArgs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputFolder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numAgents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#getCommandForSingleInstance" title="Link to this definition">¶</a></dt>
+<dd><p>Get the command for running a single instance based on the runner type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>runnerArgs</strong> (<em>dict</em>) – Arguments for the runner</p></li>
+<li><p><strong>outputFolder</strong> (<em>str</em>) – Folder for output files</p></li>
+<li><p><strong>outputfile</strong> (<em>str</em>) – File for output</p></li>
+<li><p><strong>mapfile</strong> (<em>str</em>) – Path to map file</p></li>
+<li><p><strong>numAgents</strong> (<em>int</em>) – Number of agents</p></li>
+<li><p><strong>scenfile</strong> (<em>str</em>) – Path to scenario file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Command for running the instance</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>ValueError if the command is unknown</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="status-detection">
+<h3>Status Detection<a class="headerlink" href="#status-detection" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="detectExistingStatus">
+<span class="sig-name descname"><span class="pre">detectExistingStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">runnerArgs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aNum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectExistingStatus" title="Link to this definition">¶</a></dt>
+<dd><p>Detect if the current configuration has already been run and if it was successful.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>runnerArgs</strong> (<em>dict</em>) – Arguments for the runner</p></li>
+<li><p><strong>mapfile</strong> (<em>str</em>) – Path to map file</p></li>
+<li><p><strong>aNum</strong> (<em>int</em>) – Number of agents</p></li>
+<li><p><strong>scenfile</strong> (<em>str</em>) – Path to scenario file</p></li>
+<li><p><strong>df</strong> (<em>pandas.DataFrame</em><em> or </em><em>str</em>) – DataFrame or path to CSV file with results</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple of (has_been_run, success_status)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>KeyError if a key is not found in the dataframe or the command is unknown</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="multi-threaded-execution">
+<h3>Multi-threaded Execution<a class="headerlink" href="#multi-threaded-execution" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="runSingleInstanceMT">
+<span class="sig-name descname"><span class="pre">runSingleInstanceMT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">queue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nameToNumRun</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lock</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">worker_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idToWorkerOutputFilepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">static_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runnerArgs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curAgentNum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scen</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#runSingleInstanceMT" title="Link to this definition">¶</a></dt>
+<dd><p>Run a single instance of the MAPF solver in multi^threading mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>queue</strong> (<em>multiprocessing.Queue</em>) – Queue for communication between processes</p></li>
+<li><p><strong>nameToNumRun</strong> (<em>dict</em>) – Dictionary mapping map names to number of remaining runs</p></li>
+<li><p><strong>lock</strong> (<em>multiprocessing.Lock</em>) – Lock for thread safety</p></li>
+<li><p><strong>worker_id</strong> (<em>int</em>) – ID of the worker process</p></li>
+<li><p><strong>idToWorkerOutputFilepath</strong> (<em>callable</em>) – Function to get the output file path</p></li>
+<li><p><strong>static_dict</strong> (<em>dict</em>) – Dictionary with static information</p></li>
+<li><p><strong>runnerArgs</strong> (<em>dict</em>) – Arguments for the runner</p></li>
+<li><p><strong>mapName</strong> (<em>str</em>) – Name of the map</p></li>
+<li><p><strong>curAgentNum</strong> (<em>int</em>) – Number of agents</p></li>
+<li><p><strong>scen</strong> (<em>str</em>) – Path to scenario file</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="checkIfRunNextAgents">
+<span class="sig-name descname"><span class="pre">checkIfRunNextAgents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">queue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nameToNumRun</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lock</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idToWorkerOutputFilepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">static_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eecbsArgs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curAgentNum</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#checkIfRunNextAgents" title="Link to this definition">¶</a></dt>
+<dd><p>Check if the next agent numbers should be run after completing all runs for the current agent number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>queue</strong> (<em>multiprocessing.Queue</em>) – Queue for communication between processes</p></li>
+<li><p><strong>nameToNumRun</strong> (<em>dict</em>) – Dictionary mapping map names to number of remaining runs</p></li>
+<li><p><strong>lock</strong> (<em>multiprocessing.Lock</em>) – Lock for thread safety</p></li>
+<li><p><strong>num_workers</strong> (<em>int</em>) – Number of worker processes</p></li>
+<li><p><strong>idToWorkerOutputFilepath</strong> (<em>callable</em>) – Function to get the output file path</p></li>
+<li><p><strong>static_dict</strong> (<em>dict</em>) – Dictionary with static information</p></li>
+<li><p><strong>eecbsArgs</strong> (<em>dict</em>) – Arguments for EECBS</p></li>
+<li><p><strong>mapName</strong> (<em>str</em>) – Name of the map</p></li>
+<li><p><strong>curAgentNum</strong> (<em>int</em>) – Current number of agents</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="worker">
+<span class="sig-name descname"><span class="pre">worker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">queue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nameToNumRun</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lock</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">worker_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">static_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idToWorkerOutputFilepath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#worker" title="Link to this definition">¶</a></dt>
+<dd><p>Worker process function that processes tasks from the queue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>queue</strong> (<em>multiprocessing.JoinableQueue</em>) – Queue for communication between processes</p></li>
+<li><p><strong>nameToNumRun</strong> (<em>dict</em>) – Dictionary mapping map names to number of remaining runs</p></li>
+<li><p><strong>lock</strong> (<em>multiprocessing.Lock</em>) – Lock for thread safety</p></li>
+<li><p><strong>worker_id</strong> (<em>int</em>) – ID of the worker process</p></li>
+<li><p><strong>num_workers</strong> (<em>int</em>) – Number of worker processes</p></li>
+<li><p><strong>static_dict</strong> (<em>dict</em>) – Dictionary with static information</p></li>
+<li><p><strong>idToWorkerOutputFilepath</strong> (<em>callable</em>) – Function to get the output file path</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>ValueError if the function is unknown</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helperRun">
+<span class="sig-name descname"><span class="pre">helperRun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helperRun" title="Link to this definition">¶</a></dt>
+<dd><p>Helper function to run a command in a shell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>command</strong> (<em>str</em>) – Command to run</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="setup-and-configuration">
+<h3>Setup and Configuration<a class="headerlink" href="#setup-and-configuration" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="specificRunnerDictSetup">
+<span class="sig-name descname"><span class="pre">specificRunnerDictSetup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#specificRunnerDictSetup" title="Link to this definition">¶</a></dt>
+<dd><p>Set up the runner arguments dictionary based on command type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>argparse.Namespace</em>) – Command line arguments</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Runner arguments dictionary</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>ValueError if the command is unknown</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eecbs_runner_setup">
+<span class="sig-name descname"><span class="pre">eecbs_runner_setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eecbs_runner_setup" title="Link to this definition">¶</a></dt>
+<dd><p>Set up the global variables and paths for EECBS runner.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>argparse.Namespace</em>) – Command line arguments</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="runDataManipulator">
+<span class="sig-name descname"><span class="pre">runDataManipulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapsToScens</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">static_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputPathNpzFolder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapsInputFolder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#runDataManipulator" title="Link to this definition">¶</a></dt>
+<dd><p>Run the data manipulator to convert outputs to NPZ format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<em>argparse.Namespace</em>) – Command line arguments</p></li>
+<li><p><strong>ct</strong> (<em>CustomTimer</em>) – Timer object for measuring execution time</p></li>
+<li><p><strong>mapsToScens</strong> (<em>dict</em>) – Dictionary mapping map names to scenario files</p></li>
+<li><p><strong>static_dict</strong> (<em>dict</em>) – Dictionary with static information</p></li>
+<li><p><strong>outputPathNpzFolder</strong> (<em>str</em>) – Folder for output NPZ files</p></li>
+<li><p><strong>mapsInputFolder</strong> (<em>str</em>) – Folder with input map files</p></li>
+<li><p><strong>num_workers</strong> (<em>int</em>) – Number of worker processes</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="generic_batch_runner">
+<span class="sig-name descname"><span class="pre">generic_batch_runner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#generic_batch_runner" title="Link to this definition">¶</a></dt>
+<dd><p>Main function for the generic batch runner.</p>
+<p>This function handles the overall execution flow, including:</p>
+<p>^ Setting up the filesystem
+^ Starting worker processes
+^ Creating jobs
+^ Processing results
+^ Running the data manipulator</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>argparse.Namespace</em>) – Command line arguments</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="usage-examples">
+<h3>Usage Examples<a class="headerlink" href="#usage-examples" title="Link to this heading">¶</a></h3>
+<p>Basic usage with EECBS:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>data_collection.eecbs_batchrunner
+<span class="w">  </span>--mapFolder<span class="o">=</span>data_collection/data/benchmark_data/maps<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--scenFolder<span class="o">=</span>data_collection/data/benchmark_data/scens<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--constantMapAndBDFolder<span class="o">=</span>data_collection/data/benchmark_data/constant_npzs2<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--outputFolder<span class="o">=</span>data_collection/data/logs/EXP_Test_batch/iter0/eecbs_outputs<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--num_parallel_runs<span class="o">=</span><span class="m">50</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="s2">&quot;eecbs&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--outputPathNpzFolder<span class="o">=</span>data_collection/data/logs/EXP_Test_batch/iter0/eecbs_npzs<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--firstIter<span class="o">=</span><span class="nb">false</span><span class="w"> </span>--cutoffTime<span class="o">=</span><span class="m">5</span>
+</pre></div>
+</div>
+<p>Basic usage with Python model:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>data_collection.eecbs_batchrunner
+<span class="w">  </span>--mapFolder<span class="o">=</span>data_collection/data/benchmark_data/maps<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--scenFolder<span class="o">=</span>data_collection/data/benchmark_data/scens<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--constantMapAndBDFolder<span class="o">=</span>data_collection/data/benchmark_data/constant_npzs2<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--outputFolder<span class="o">=</span>data_collection/data/logs/EXP_Test_batch/iter0/pymodel_outputs<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--num_parallel_runs<span class="o">=</span><span class="m">50</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="s2">&quot;pymodel&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--modelPath<span class="o">=</span>data_collection/data/logs/EXP_Test2/iter0/models/max_test_acc.pt<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--k<span class="o">=</span><span class="m">4</span><span class="w"> </span>--m<span class="o">=</span><span class="m">5</span><span class="w"> </span>--maxSteps<span class="o">=</span><span class="m">100</span><span class="w"> </span>--shieldType<span class="o">=</span>CS-PIBT
+</pre></div>
+</div>
+</section>
+</section>
+<section id="data-manipulator-py">
+<h2>data_manipulator.py<a class="headerlink" href="#data-manipulator-py" title="Link to this heading">¶</a></h2>
+<p>This file processes raw data from EECBS solver runs and converts them into NPZ format
+suitable for machine learning applications. It handles maps, backward Dijkstra (BD) values,
+and path data.</p>
+<p>Key operations:</p>
+<ul class="simple">
+<li><p>Parse map files (.map) to NumPy arrays</p></li>
+<li><p>Process backward Dijkstra (BD) files to NumPy arrays</p></li>
+<li><p>Convert agent path information to NumPy arrays</p></li>
+<li><p>Save data in compressed NPZ format for efficient loading</p></li>
+</ul>
+<section id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="PipelineDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PipelineDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Dataset</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PipelineDataset" title="Link to this definition">¶</a></dt>
+<dd><p>A PyTorch Dataset for loading EECBS instances for training ML models.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="PipelineDataset.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapFileNpz</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bdFileNpz</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pathFileNpz</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">helper_bd_preprocess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'middle'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PipelineDataset.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mapFileNpz</strong> (<em>str</em>) – Path to NPZ file containing map data</p></li>
+<li><p><strong>bdFileNpz</strong> (<em>str</em>) – Path to NPZ file containing backward Dijkstra data</p></li>
+<li><p><strong>pathFileNpz</strong> (<em>str</em>) – Path to NPZ file containing path data</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – Window size for local observation</p></li>
+<li><p><strong>size</strong> (<em>int</em>) – Maximum size of dataset</p></li>
+<li><p><strong>max_agents</strong> (<em>int</em>) – Maximum number of agents</p></li>
+<li><p><strong>helper_bd_preprocess</strong> (<em>str</em>) – Method to center helper backward Dijkstras (‘middle’, ‘current’, or ‘subtraction’)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PipelineDataset.__len__">
+<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PipelineDataset.__len__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Number of instances in the dataset</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PipelineDataset.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PipelineDataset.__getitem__" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves an item from the dataset, providing the local observation window.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idx</strong> (<em>int</em>) – Index of the instance to retrieve</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple of (current_locations, one_hot_labels, backward_dijkstra, grid_map, goal_locations)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PipelineDataset.find_instance">
+<span class="sig-name descname"><span class="pre">find_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PipelineDataset.find_instance" title="Link to this definition">¶</a></dt>
+<dd><p>Finds the specific instance based on the index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idx</strong> (<em>int</em>) – Index to find</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple of (backward_dijkstra, grid_map, paths, timestep, max_timesteps)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PipelineDataset.parse_npz">
+<span class="sig-name descname"><span class="pre">parse_npz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loaded_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loaded_maps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loaded_bds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PipelineDataset.parse_npz" title="Link to this definition">¶</a></dt>
+<dd><p>Parses loaded NPZ data and prepares it for dataset access.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>loaded_paths</strong> (<em>dict</em>) – Dictionary of path data</p></li>
+<li><p><strong>loaded_maps</strong> (<em>dict</em>) – Dictionary of map data</p></li>
+<li><p><strong>loaded_bds</strong> (<em>dict</em>) – Dictionary of backward Dijkstra data</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PipelineDataset.parse_npz2">
+<span class="sig-name descname"><span class="pre">parse_npz2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PipelineDataset.parse_npz2" title="Link to this definition">¶</a></dt>
+<dd><p>Alternative parsing method that filters and validates data.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="file-parsing-functions">
+<h3>File Parsing Functions<a class="headerlink" href="#file-parsing-functions" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="parse_map">
+<span class="sig-name descname"><span class="pre">parse_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse_map" title="Link to this definition">¶</a></dt>
+<dd><p>Parses a map file into a NumPy array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mapfile</strong> (<em>str</em>) – Path to map file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>2D array where 1 represents obstacles and 0 represents free space</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="parse_path">
+<span class="sig-name descname"><span class="pre">parse_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse_path" title="Link to this definition">¶</a></dt>
+<dd><p>Parses a path file containing agent movements over time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pathfile</strong> (<em>str</em>) – Path to path file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>3D array of shape (timesteps, num_agents, 2) containing agent positions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="parse_bd">
+<span class="sig-name descname"><span class="pre">parse_bd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bdfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse_bd" title="Link to this definition">¶</a></dt>
+<dd><p>Parses a backward Dijkstra file into a NumPy array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bdfile</strong> (<em>str</em>) – Path to backward Dijkstra file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>3D array of shape (num_agents, height, width) containing distance values</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="batch-processing-functions">
+<h3>Batch Processing Functions<a class="headerlink" href="#batch-processing-functions" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="batch_map">
+<span class="sig-name descname"><span class="pre">batch_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_parallel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#batch_map" title="Link to this definition">¶</a></dt>
+<dd><p>Processes multiple map files in parallel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dir</strong> (<em>str</em>) – Directory containing map files</p></li>
+<li><p><strong>num_parallel</strong> (<em>int</em>) – Number of parallel processes to use</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary mapping filenames to map arrays</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="batch_bd">
+<span class="sig-name descname"><span class="pre">batch_bd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_parallel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#batch_bd" title="Link to this definition">¶</a></dt>
+<dd><p>Processes multiple backward Dijkstra files in parallel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dir</strong> (<em>str</em>) – Directory containing BD files</p></li>
+<li><p><strong>num_parallel</strong> (<em>int</em>) – Number of parallel processes to use</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary mapping scenario names to BD arrays</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="batch_path">
+<span class="sig-name descname"><span class="pre">batch_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#batch_path" title="Link to this definition">¶</a></dt>
+<dd><p>Processes multiple path files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dir</strong> (<em>str</em>) – Directory containing path files</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary mapping key strings to path arrays</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="command-line-interface">
+<h3>Command Line Interface<a class="headerlink" href="#command-line-interface" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="main">
+<span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main" title="Link to this definition">¶</a></dt>
+<dd><p>Entry point for the command-line interface. Parses arguments and orchestrates
+the processing of maps, backward Dijkstra values, and paths.</p>
+</dd></dl>
+
+</section>
+<section id="id1">
+<h3>Usage Examples<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<p>Example usage from command line:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>data_collection.data_manipulator
+<span class="w">  </span>--pathsIn<span class="o">=</span>data_collection/data/logs/EXP_Collect_BD/iter0/eecbs_outputs/empty_8_8/paths/
+<span class="w">  </span>--pathOutFile<span class="o">=</span>data_collection/data/logs/EXP_Collect_BD/iter0/eecbs_npzs/empty_8_8_paths.npz
+<span class="w">  </span>--bdIn<span class="o">=</span>data_collection/data/logs/EXP_Collect_BD/iter0/eecbs_outputs/empty_8_8/bd
+<span class="w">  </span>--bdOutFile<span class="o">=</span>data_collection/data/benchmark_data/constant_npzs2/empty_8_8_bds.npz
+<span class="w">  </span>--mapIn<span class="o">=</span>data_collection/data/benchmark_data/maps
+<span class="w">  </span>--mapOutFile<span class="o">=</span>data_collection/data/benchmark_data/constant_npzs2/empty_8_8_map.npz
+<span class="w">  </span>--num_parallel<span class="o">=</span><span class="m">1</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Data Collection</a><ul>
+<li><a class="reference internal" href="#eecbs-batchrunner-py">eecbs_batchrunner.py</a><ul>
+<li><a class="reference internal" href="#module-constants">Module Constants</a></li>
+<li><a class="reference internal" href="#tmux-session-functions">Tmux Session Functions</a></li>
+<li><a class="reference internal" href="#command-generation">Command Generation</a></li>
+<li><a class="reference internal" href="#status-detection">Status Detection</a></li>
+<li><a class="reference internal" href="#multi-threaded-execution">Multi-threaded Execution</a></li>
+<li><a class="reference internal" href="#setup-and-configuration">Setup and Configuration</a></li>
+<li><a class="reference internal" href="#usage-examples">Usage Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#data-manipulator-py">data_manipulator.py</a><ul>
+<li><a class="reference internal" href="#classes">Classes</a></li>
+<li><a class="reference internal" href="#file-parsing-functions">File Parsing Functions</a></li>
+<li><a class="reference internal" href="#batch-processing-functions">Batch Processing Functions</a></li>
+<li><a class="reference internal" href="#command-line-interface">Command Line Interface</a></li>
+<li><a class="reference internal" href="#id1">Usage Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="index.html"
+                          title="previous chapter">SSIL GNN MAPF with Simulation and DAgger Documentation</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="slurm_implementation.html"
+                          title="next chapter">Slurm Implementation</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/data_collection.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="slurm_implementation.html" title="Slurm Implementation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="SSIL GNN MAPF with Simulation and DAgger Documentation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">SSIL GNN MAPF with Simulation and DAgger Pipeline 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Data Collection</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2025, Arthur Jakobsson.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>
