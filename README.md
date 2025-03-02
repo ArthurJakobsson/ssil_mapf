@@ -1,14 +1,17 @@
-# Nerfies
+# Work Smarter Not Harder: Simple Imitation Learning with CS-PIBT Outperforms Large Scale Imitation Learning for MAPF
 
-This is the repository that contains source code for the [Nerfies website](https://nerfies.github.io).
+This is the repository that contains source code for the [SSIL MAPF website](https://arthurjakobsson.github.io/ssil_mapf).
 
-If you find Nerfies useful for your work please cite:
+If you find SSIL MAPF useful for your work please cite:
 ```
-@article{park2021nerfies
-  author    = {Park, Keunhong and Sinha, Utkarsh and Barron, Jonathan T. and Bouaziz, Sofien and Goldman, Dan B and Seitz, Steven M. and Martin-Brualla, Ricardo},
-  title     = {Nerfies: Deformable Neural Radiance Fields},
-  journal   = {ICCV},
-  year      = {2021},
+@article{veerapaneni2024worksmarterhardersimple,
+      title={Work Smarter Not Harder: Simple Imitation Learning with CS-PIBT Outperforms Large Scale Imitation Learning for MAPF}, 
+      author={Rishi Veerapaneni and Arthur Jakobsson and Kevin Ren and Samuel Kim and Jiaoyang Li and Maxim Likhachev},
+      year={2024},
+      eprint={2409.14491},
+      archivePrefix={arXiv},
+      primaryClass={cs.MA},
+      url={https://arxiv.org/abs/2409.14491}, 
 }
 ```
 
