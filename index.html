@@ -9,7 +9,7 @@
   <title>Work Smarter Not Harder: Simple Imitation Learning with CS-PIBT Outperforms Large Scale Imitation Learning for MAPF</title>
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
 
@@ -20,7 +20,7 @@
     gtag('js', new Date());
 
     gtag('config', 'G-PYVRSFMDRL');
-  </script>
+  </script> -->
 
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
         rel="stylesheet">
@@ -56,6 +56,13 @@
       <span class="icon">
           <i class="fas fa-home"></i>
       </span>
+      <span>Arthur</span>
+      </a>
+      <a class="navbar-item" href="https://rishi-v.github.io/">
+      <span class="icon">
+          <i class="fa fa-home"></i>
+      </span>
+      <span>Rishi</span>
       </a>
 
       <!-- <div class="navbar-item has-dropdown is-hoverable">
@@ -111,6 +118,12 @@
           <div class="is-size-5 publication-authors">
             <span class="author-block"><sup>1</sup>Carnegie Mellon University,</span>
             <span class="author-block"><sup>2</sup>Solon High School</span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span>
+              ICRA 2025
+            </span>
           </div>
 
           <div class="column has-text-centered">
@@ -232,6 +245,75 @@
     <div class="columns is-centered">
       <div class="column is-full">
         <div class="content">
+          <h2 class="title is-3">Using Large Scale Imitation Learning for MAPF</h2>
+          <center>
+            <img src="static/images/large-scale-il.png" alt="data" class="center-image blend-img-background"  style="width: 70%;"/>
+          </center>
+          <div class="level-set has-text-justified">
+            <p>
+              From a diverse sets of map, we can use existing strong (centralized) heuristic search solvers to solve instances with hundreds of agents. This allows us to easily collect thousands of MAPF solutions. Each solution contains a sequence of timesteps, where each timestep contains 10s-100s of agents with their next action label.
+            </p>
+            <p>
+              We can then follow existing work and use a Graph Neural Network (GNN) structure where each agent is a "vertex", and agents that are within their local vield of view (FoV) and can communicate with each other are "edges". The GNN is trained to predict the action label of each agent.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <div class="content">
+          <h2 class="title is-3">Results using Naive Collision Shielding</h2>
+          <center>
+            <img src="static/images/increasing-data2.gif" alt="data" class="center-image blend-img-background"  style="width: 90%;"/>
+          </center>
+          <div class="level-set has-text-justified">
+            <p>
+              Increasing the amount of data for imitation learning increases model performance. With a large amount of data, it is able to outperform existing EPH (prior state-of-the-art) method. However, it still struggles in congested regions.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <div class="content">
+          <h2 class="title is-3">Results using CS-PIBT</h2>
+          <center>
+            <img src="static/images/cs-pibt-results.gif" alt="data" class="center-image blend-img-background"  style="width: 90%;"/>
+          </center>
+          <div class="level-set has-text-justified">
+            <p>
+              Using CS-PIBT is a game changer. We can train a model in minutes that outperforms existing ML MAPF policies, which implies that one-step collisions are a major bottleneck for existing ML MAPF policies. This has serious implications for all future ML MAPF policies (with local communication) which currently struggle to scale. 
+            </p>
+            <p>
+              However, one caveat is that with CS-PIBT, the model does not need to learn something useful as CS-PIBT could do all the heavy lifting of resolving collisions. Thus, it is important to compare against a baseline that uses CS-PIBT with greedy actions (e.g., PIBT). Our comparison shows that our model with CS-PIBT does not convincingly outperform PIBT.
+            </p>
+            <p>
+              See our paper for more details!
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- <section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <div class="content">
           <h2 class="title is-3">Large Scale Dataset Creation</h2>
           <center>
             <img src="static/images/data.png" alt="data" class="center-image blend-img-background"  style="width: 50%;"/>
@@ -245,10 +327,10 @@
       </div>
     </div>
   </div>
-</section>
+</section> -->
 
 
-<section class="section">
+<!-- <section class="section">
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-full">
@@ -281,17 +363,14 @@
       </div>
     </div>
   </div>
-</section>
+</section> -->
 
-<section class="section">
+<!-- <section class="section">
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-full">
         <div class="content">
           <h2 class="title is-3">Results</h2>
-          <!-- <center>
-            <img src="static/images/data.png" alt="data" class="center-image blend-img-background"  style="width: 50%;"/>
-          </center> -->
           <div class="level-set has-text-justified">
             <p>
               Text explaining results, probably include the big graph with results.
@@ -322,7 +401,7 @@
       </div>
     </div>
   </div>
-</section>
+</section> -->
 
 
 <section class="section" id="BibTeX">
@@ -356,16 +435,10 @@
       <div class="column is-8">
         <div class="content">
           <p>
-            This website is licensed under a <a rel="license"
+            This website was created from this <a
+            href="https://github.com/eliahuhorwitz/Academic-project-page-template">source code</a> licensed under a <a rel="license"
                                                 href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
             Commons Attribution-ShareAlike 4.0 International License</a>.
-          </p>
-          <p>
-            This means you are free to borrow the <a
-              href="https://github.com/eliahuhorwitz/Academic-project-page-template">source code</a> of this website,
-            we just ask that you link back to this page in the footer.
-            Please remember to remove the analytics code included in the header of the website which
-            you do not want on your website.
           </p>
         </div>
       </div>
